@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Report Hazard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #1e1e2f, #2c3e50);
+      min-height: 100vh;
+      font-family: 'Segoe UI', sans-serif;
+      color: #fff;
+    }
+
+    .form-container {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 35px;
+      border-radius: 15px;
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+      color: white;
+      transition: transform 0.3s ease;
+    }
+
+    .form-container:hover {
+      transform: scale(1.01);
+    }
+
+    .form-title {
+      font-weight: 700;
+      font-size: 2rem;
+      text-align: center;
+      background: linear-gradient(to right, #00c6ff, #0072ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .form-label {
+      color: #dcdcdc;
+      font-weight: 500;
+    }
+
+    .form-control {
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+
+    .form-control::placeholder {
+      color: #bcbcbc;
+    }
+
+    .form-control:focus {
+      background-color: rgba(255, 255, 255, 0.15);
+      border-color: #00c6ff;
+      box-shadow: 0 0 0 0.25rem rgba(0, 198, 255, 0.25);
+    }
+
+    .btn-primary {
+      background: linear-gradient(to right, #00c6ff, #0072ff);
+      border: none;
+      padding: 10px 30px;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(to right, #0072ff, #00c6ff);
+      transform: scale(1.05);
+    }
+
+    footer {
+      color: #ccc;
+    }
+
+    .location-btn {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      z-index: 10;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    .location-btn:hover {
+      color: #00c6ff;
+    }
+
+    .invalid-hazard-warning {
+      background: #f44336;
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      margin-bottom: 20px;
+      border-left: 4px solid #d32f2f;
+      animation: slideInDown 0.5s ease-out;
+    }
+
+    .valid-hazard-info {
+      background: #4CAF50;
+      color: white;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      border-left: 4px solid #2e7d32;
+      animation: slideInDown 0.5s ease-out;
+    }
+
+    .form-disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .chatbot-redirect {
+      background: #2196F3;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 12px 24px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 15px;
+      transition: all 0.3s ease;
+    }
+
+    .chatbot-redirect:hover {
+      background: #1976D2;
+      transform: scale(1.05);
+    }
+
+    .auto-filled {
+      border: 2px solid #4CAF50 !important;
+      background-color: rgba(76, 175, 80, 0.1) !important;
+    }
+
+    .image-preview {
+      max-width: 200px;
+      max-height: 150px;
+      border-radius: 8px;
+      margin-top: 10px;
+      border: 2px solid #4CAF50;
+    }
+
+    .chatbot-image-container {
+      background: rgba(76, 175, 80, 0.1);
+      border: 2px solid #4CAF50;
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 10px;
+      text-align: center;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    .use-chatbot-image {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 8px 16px;
+      margin-top: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .use-chatbot-image:hover {
+      background: #45a049;
+      transform: scale(1.05);
+    }
+
+    .error-notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      background: linear-gradient(135deg, #f44336, #d32f2f);
+      color: white;
+      padding: 15px 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      animation: slideInRight 0.5s ease-out;
+    }
+    .image-selected-indicator {
+  background: rgba(76, 175, 80, 0.1);
+  border: 2px solid #4CAF50;
+  border-radius: 8px;
+  padding: 15px;
+  text-align: center;
+  color: #4CAF50;
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+.chatbot-image-selected {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(76, 175, 80, 0.05));
+  border: 3px solid #4CAF50;
+  animation: selectedGlow 2s ease-in-out;
+}
+
+@keyframes selectedGlow {
+  0% { box-shadow: 0 0 5px rgba(76, 175, 80, 0.5); }
+  50% { box-shadow: 0 0 20px rgba(76, 175, 80, 0.8); }
+  100% { box-shadow: 0 0 5px rgba(76, 175, 80, 0.5); }
+}
+
+
+    .success-notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      background: linear-gradient(135deg, #4CAF50, #45a049);
+      color: white;
+      padding: 15px 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      animation: slideInRight 0.5s ease-out;
+    }
+
+    @keyframes slideInRight {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideInDown {
+      from {
+        transform: translateY(-100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .form-select {
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+
+    .form-select:focus {
+      background-color: rgba(255, 255, 255, 0.15);
+      border-color: #00c6ff;
+      box-shadow: 0 0 0 0.25rem rgba(0, 198, 255, 0.25);
+    }
+
+    .form-select option {
+      background-color: #2c3e50;
+      color: white;
+    }
+
+    .submit-loading {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+
+  
+
+  <!-- Navbar -->
+  <%- include("navbar") %>
+
+  <!-- Report Form Section -->
+  <section class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-8" data-aos="zoom-in">
+        
+        <!-- Invalid Hazard Warning (Hidden by default) -->
+        <div id="invalidHazardWarning" class="invalid-hazard-warning" style="display: none;">
+          <h4>⚠️ Invalid Image for Hazard Reporting</h4>
+          <p>The uploaded image does not contain a valid hazard. Please use the AI Chatbot to verify your image first.</p>
+          <button class="chatbot-redirect" onclick="openChatbot()">
+            🤖 Use AI Chatbot to Verify Image
+          </button>
+        </div>
+
+        <!-- Valid Hazard Info (Hidden by default) -->
+        <div id="validHazardInfo" class="valid-hazard-info" style="display: none;">
+          <h5>✅ Valid Hazard Detected</h5>
+          <p>Hazard Type: <strong id="detectedHazardType"></strong></p>
+          <p>You can now proceed with the detailed report.</p>
+        </div>
+
+        <div class="form-container" id="reportForm">
+          <h2 class="form-title mb-4">Report a Civic Hazard</h2>
+       <form action="/report" method="POST" enctype="multipart/form-data" id="hazardForm">
+            
+            <!-- Hidden input for chatbot image -->
+            <input type="hidden" id="chatbotImageData" name="chatbotImageData">
+            <input type="hidden" id="useChatbotImage" name="useChatbotImage" value="false">
+            
+            <!-- Title -->
+            <div class="mb-3">
+              <label for="title" class="form-label">Title</label>
+                <input type="text" class="form-control" id="title" name="title" required>
+  </div>
+
+            <!-- Image Upload -->
+          <div class="mb-3 position-relative">
+  <label for="image" class="form-label" id="imageLabel">Upload Image</label>
+              
+              <!-- Chatbot Image Preview (Hidden by default) -->
+             <div id="chatbotImageContainer" class="chatbot-image-container" style="display: none;">
+    <h6>🤖 Image from AI Chatbot:</h6>
+    <img id="chatbotImagePreview" class="image-preview" alt="Chatbot detected hazard">
+    <br>
+    <div style="margin-top: 15px;">
+      <button type="button" class="use-chatbot-image" onclick="useChatbotImage()">
+        ✅ Use This Image
+      </button>
+      <button type="button" class="btn btn-sm btn-outline-light ms-2" onclick="uploadNewImage()">
+        📷 Upload Different Image
+      </button>
+    </div>
+  </div>
+              
+              <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
+              <div id="loadingSpinner" class="spinner-border text-info position-absolute" role="status" style="top: 55%; right: 10px; display: none;">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+
+            <!-- Short Description -->
+            <div class="mb-3">
+    <label for="description" class="form-label">Description</label>
+    <textarea class="form-control" id="description" name="description" required></textarea>
+            </div>
+
+            <!-- Location Text -->
+            <div class="mb-3">
+              <label for="location" class="form-label">Location</label>
+              <input type="text" class="form-control" id="location" name="location" placeholder="e.g., Near Gandhi Park, Block B" required>
+            </div>  
+
+            <!-- Google Maps Link -->
+            <div class="mb-4 position-relative">
+              <label for="mapLink" class="form-label">Google Maps Link</label>
+              <div class="input-group">
+                <input type="url" class="form-control" id="mapLink" name="mapLink" placeholder="Paste map link here" required>
+                <button type="button" class="location-btn" id="getLocationBtn" title="Use current location">📍</button>
+              </div>
+            </div>
+
+            <!-- Category Dropdown -->
+            <div class="mb-4">
+              <label for="category" class="form-label">Category</label>
+              <select class="form-select" id="category" name="catagory" required>
+                <option value="" disabled selected>Select a category</option>
+                <option value="Fire">Fire</option>
+                <option value="Water leakage">Water leakage</option>
+                <option value="Road cracks">Road cracks</option>
+                <option value="Electrical hazard">Electrical hazard</option>
+                <option value="Environmental pollution">Environmental pollution</option>
+                <option value="Open manhole">Open manhole</option>
+                <option value="Broken signboard">Broken signboard</option>
+                <option value="Drainage system problem">Drainage system problem</option>
+                <option value="Streetlight issue">Streetlight issue</option>
+                <option value="Garbage dump">Garbage dump</option>
+                <option value="Construction debris">Construction debris</option>
+                <option value="Noise pollution">Noise pollution</option>
+                <option value="Abandoned vehicle">Abandoned vehicle</option>
+                <option value="Unauthorized hoarding">Unauthorized hoarding</option>
+                <option value="Others">Others</option>
+              </select>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="text-center">
+              <button type="submit" class="btn btn-primary" id="submitBtn">Submit Report</button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="text-center py-4">
+    © 2025 Hazard Reporter — Built for the people, by the people.
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  
+  <script>
+    AOS.init();
+
+    // Check for hazard data from chatbot when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      checkForChatbotData();
+      getCurrentLocation(); // Auto-get location on page load
+      checkForMessages(); // Check for success/error messages
+    });
+
+    function checkForChatbotData() {
+      // Check for extracted hazard data from chatbot
+      const extractedHazard = JSON.parse(sessionStorage.getItem('extractedHazard') || '{}');
+      const chatbotImageBase64 = sessionStorage.getItem('chatbotImageBase64');
+      
+      console.log('Checking chatbot data:', extractedHazard, !!chatbotImageBase64);
+      
+      if (extractedHazard.type && extractedHazard.type !== 'NONE') {
+        // Valid hazard detected
+        showValidHazard(extractedHazard.type);
+        autoFillForm(extractedHazard.type, chatbotImageBase64);
+      } else if (extractedHazard.type === 'NONE') {
+        // Invalid hazard
+        showInvalidHazard();
+      }
+    }
+
+    function showValidHazard(hazardType) {
+      document.getElementById('validHazardInfo').style.display = 'block';
+      document.getElementById('detectedHazardType').textContent = hazardType;
+      document.getElementById('invalidHazardWarning').style.display = 'none';
+    }
+
+    function showInvalidHazard() {
+      document.getElementById('invalidHazardWarning').style.display = 'block';
+      document.getElementById('validHazardInfo').style.display = 'none';
+      document.getElementById('reportForm').classList.add('form-disabled');
+    }
+
+    function autoFillForm(hazardType, imageBase64) {
+      // Auto-fill category
+      const categorySelect = document.getElementById('category');
+      categorySelect.value = hazardType;
+      categorySelect.classList.add('auto-filled');
+      
+      // Auto-fill title
+      const titleInput = document.getElementById('title');
+      titleInput.value = `${hazardType} - Detected via AI`;
+      titleInput.classList.add('auto-filled');
+      
+      // Show chatbot image if available
+      if (imageBase64) {
+        showChatbotImage(imageBase64);
+      }
+    }
+
+    function showChatbotImage(imageBase64) {
+      const chatbotImageContainer = document.getElementById('chatbotImageContainer');
+      const chatbotImagePreview = document.getElementById('chatbotImagePreview');
+      const regularImageInput = document.getElementById('image');
+      
+      // Show the chatbot image container
+      chatbotImageContainer.style.display = 'block';
+      chatbotImagePreview.src = imageBase64;
+      
+      // Hide the regular file input initially
+      regularImageInput.style.display = 'none';
+      regularImageInput.required = false;
+      
+      // Store the image data in hidden input
+      document.getElementById('chatbotImageData').value = imageBase64;
+      
+      // Automatically use chatbot image
+      useChatbotImage();
+    }
+
+   function useChatbotImage() {
+
+  // Mark that we're using the chatbot image
+  document.getElementById('useChatbotImage').value = 'true';
+  
+  // FIXED: Hide the regular file input completely
+  const regularImageInput = document.getElementById('image');
+  regularImageInput.style.display = 'none';
+  regularImageInput.required = false;
+  
+  // FIXED: Show visual confirmation that chatbot image is selected
+  const chatbotContainer = document.getElementById('chatbotImageContainer');
+  chatbotContainer.style.border = '3px solid #4CAF50';
+  chatbotContainer.style.backgroundColor = 'rgba(76, 175, 80, 0.1)';
+  
+  // FIXED: Add visual indicator that image is selected
+  const imageLabel = document.querySelector('label[for="image"]');
+  imageLabel.innerHTML = '✅ Image Selected (AI Chatbot)';
+  imageLabel.style.color = '#4CAF50';
+  
+  console.log('✅ Using chatbot image for submission');
+}
+
+
+    function uploadNewImage() {
+  // Show the regular file input
+  const regularImageInput = document.getElementById('image');
+  regularImageInput.style.display = 'block';
+  regularImageInput.required = true;
+  
+  // Hide chatbot image container
+  document.getElementById('chatbotImageContainer').style.display = 'none';
+  
+  // Clear the chatbot image data
+  document.getElementById('useChatbotImage').value = 'false';
+  document.getElementById('chatbotImageData').value = '';
+  
+  // FIXED: Reset the label
+  const imageLabel = document.querySelector('label[for="image"]');
+  imageLabel.innerHTML = 'Upload Image';
+  imageLabel.style.color = '#dcdcdc';
+  
+  console.log('🔄 Switched to manual image upload');
+}
+
+//to show the chatbot image 
+function showChatbotImage(imageBase64) {
+  const chatbotImageContainer = document.getElementById('chatbotImageContainer');
+  const chatbotImagePreview = document.getElementById('chatbotImagePreview');
+  
+  // Show the chatbot image container
+  chatbotImageContainer.style.display = 'block';
+  chatbotImagePreview.src = imageBase64;
+  
+  // Store the image data in hidden input
+  document.getElementById('chatbotImageData').value = imageBase64;
+  
+  // FIXED: Automatically use chatbot image (no manual click needed)
+  setTimeout(() => {
+    useChatbotImage();
+  }, 100);
+}
+
+
+    function openChatbot() {
+      // Open the chatbot widget
+      const chatToggle = document.getElementById('chatToggle');
+      if (chatToggle) {
+        chatToggle.click();
+      } else {
+        showNotification('Please use the AI Chatbot in the navigation to verify your image first.', 'error');
+      }
+    }
+
+    // Auto-get current location
+    function getCurrentLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          const link = `https://www.google.com/maps?q=${lat},${lon}`;
+          document.getElementById("mapLink").value = link;
+          document.getElementById("mapLink").classList.add('auto-filled');
+        }, function(error) {
+          console.log('Location access denied or unavailable');
+        });
+      }
+    }
+
+    // Manual location button
+    document.getElementById("getLocationBtn").addEventListener("click", function () {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          const link = `https://www.google.com/maps?q=${lat},${lon}`;
+          document.getElementById("mapLink").value = link;
+          document.getElementById("mapLink").classList.add('auto-filled');
+          showNotification('📍 Location added successfully!', 'success');
+        }, function (error) {
+          showNotification('Unable to retrieve location. Please allow location access.', 'error');
+        });
+      } else {
+        showNotification('Geolocation is not supported by this browser.', 'error');
+      }
+    });
+
+    // FIXED: Form submission handling
+    document.getElementById('hazardForm').addEventListener('submit', function(e) {
+      console.log('Form submission started');
+      
+      const extractedHazard = JSON.parse(sessionStorage.getItem('extractedHazard') || '{}');
+      
+      // Check if hazard is invalid
+      if (extractedHazard.type === 'NONE') {
+        e.preventDefault();
+        showNotification('Please verify your image with the AI Chatbot first. Invalid hazards cannot be reported.', 'error');
+        return false;
+      }
+      
+      // Show loading state
+      const submitBtn = document.getElementById('submitBtn');
+      const originalText = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Submitting...';
+      submitBtn.disabled = true;
+      submitBtn.classList.add('submit-loading');
+      
+      // Log form data for debugging
+      const formData = new FormData(this);
+      console.log('Form data being submitted:');
+      for (let [key, value] of formData.entries()) {
+        if (key === 'chatbotImageData') {
+          console.log(key + ':', value ? 'Base64 image data present' : 'No image data');
+        } else {
+          console.log(key + ':', value);
+        }
+      }
+      
+      // Let the form submit naturally - don't prevent default
+      // The server will handle the redirect
+      
+      // Clear session storage after a short delay (form will redirect)
+      setTimeout(() => {
+        sessionStorage.removeItem('extractedHazard');
+        sessionStorage.removeItem('chatbotImageBase64');
+        sessionStorage.removeItem('chatbotImageName');
+        sessionStorage.removeItem('chatbotImageType');
+      }, 500);
+    });
+
+    // Image upload validation
+    document.getElementById('image').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        // Validate file size (10MB max)
+        if (file.size > 10 * 1024 * 1024) {
+          showNotification('Image file is too large. Please use a smaller image (max 10MB).', 'error');
+          this.value = '';
+          return;
+        }
+        
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+          showNotification('Please select a valid image file.', 'error');
+          this.value = '';
+          return;
+        }
+        
+        // Show loading spinner
+        document.getElementById('loadingSpinner').style.display = 'block';
+        
+        // Hide loading spinner after a delay
+        setTimeout(() => {
+          document.getElementById('loadingSpinner').style.display = 'none';
+          showNotification('✅ Image uploaded successfully!', 'success');
+        }, 1000);
+      }
+    });
+
+    // Enhanced notification system
+    function showNotification(message, type = 'success') {
+      const notification = document.createElement('div');
+      notification.className = `${type}-notification`;
+      notification.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 20px;">${type === 'success' ? '✅' : '❌'}</span>
+          <div>${message}</div>
+          <button onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; color: white; font-size: 18px; cursor: pointer; margin-left: 10px;">&times;</button>
+        </div>
+      `;
+      document.body.appendChild(notification);
+      
+      // Auto-remove after 5 seconds
+      setTimeout(() => {
+        if (notification.parentElement) {
+          notification.remove();
+        }
+      }, 5000);
+    }
+
+    // Check for URL parameters and show messages
+    function checkForMessages() {
+      const urlParams = new URLSearchParams(window.location.search);
+      
+      if (urlParams.get('success') === 'true') {
+        showNotification('Report submitted successfully! Redirecting to All Reports...', 'success');
+        // Redirect to allreports after showing success message
+        setTimeout(() => {
+          window.location.href = '/allreports';
+        }, 2000);
+      }
+      
+      const errorType = urlParams.get('error');
+      if (errorType) {
+        let errorMessage = '';
+        switch(errorType) {
+          case 'no_image':
+            errorMessage = 'Please upload an image or use the AI chatbot to verify your hazard first.';
+            break;
+          case 'missing_fields':
+            errorMessage = 'Please fill in all required fields.';
+            break;
+          case 'file_too_large':
+            errorMessage = 'Image file is too large. Please use a smaller image (max 10MB).';
+            break;
+          case 'image_save_failed':
+            errorMessage = 'Failed to save image. Please try again.';
+            break;
+          case 'processing_failed':
+            errorMessage = 'Error processing report. Please try again.';
+            break;
+            
+            //error for duplicate image
+            case 'duplicate_hazard':
+  const duplicateTitle = urlParams.get('title') || 'a similar hazard';
+  const duplicateCategory = urlParams.get('category') || 'this category';
+  errorMessage = `This hazard already exists in the area. Similar hazard found: "${duplicateTitle}" in "${duplicateCategory}" category. Check existing reports.`;
+  break;
+          default:
+            errorMessage = 'An error occurred. Please try again.';
+        }
+        showNotification(errorMessage, 'error');
+      }
+      
+      // Clean URL after showing messages
+      if (urlParams.get('success') || urlParams.get('error')) {
+        const cleanUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, cleanUrl);
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,531 @@
+<!-- Chatbot Widget Styles -->
+<style>
+/* Chatbot Widget Styles */
+.chat-widget {
+    position: fixed;
+    top: 70px;
+    right: 20px;
+    width: 350px;
+    height: 500px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    z-index: 9999;
+    display: none;
+    flex-direction: column;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.chat-toggle {
+    position: fixed;
+    top: 15px;
+    right: 20px;
+    width: 50px;
+    height: 40px;
+    background: #667eea;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    z-index: 10000;
+    transition: all 0.3s ease;
+    border: none;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.chat-toggle:hover {
+    transform: scale(1.05);
+    background: #5a6fd8;
+}
+
+.chat-header {
+    background: rgba(255,255,255,0.1);
+    padding: 15px;
+    border-radius: 15px 15px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+}
+
+.chat-header h3 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    background: rgba(255,255,255,0.05);
+}
+
+.chat-input-area {
+    padding: 15px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 0 0 15px 15px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.chat-input {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 20px;
+    outline: none;
+    font-size: 14px;
+}
+
+.send-btn, .upload-btn {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+}
+
+.upload-btn {
+    background: #FF9800;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.message {
+    margin: 10px 0;
+    padding: 10px 15px;
+    border-radius: 15px;
+    max-width: 80%;
+    word-wrap: break-word;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.user-message {
+    background: #2196F3;
+    color: white;
+    margin-left: auto;
+    text-align: right;
+}
+
+.bot-message {
+    background: rgba(255,255,255,0.9);
+    color: #333;
+}
+
+.hazard-result {
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 15px;
+    max-width: 90%;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.hazard-detected {
+    background: #4CAF50;
+    color: white;
+    border-left: 4px solid #2e7d32;
+}
+
+.no-hazard {
+    background: #f44336;
+    color: white;
+    border-left: 4px solid #d32f2f;
+}
+
+.proceed-btn {
+    background: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    padding: 8px 16px;
+    margin-top: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background 0.3s;
+}
+
+.proceed-btn:hover {
+    background: #1976D2;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .chat-widget {
+        width: 300px;
+        height: 450px;
+        top: 60px;
+        right: 10px;
+    }
+    
+    .chat-toggle {
+        top: 10px;
+        right: 10px;
+        width: 45px;
+        height: 35px;
+        font-size: 10px;
+    }
+}
+
+/* Scrollbar styling */
+.chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.3);
+    border-radius: 3px;
+}
+</style>
+
+<!-- Chatbot HTML -->
+<button class="chat-toggle" id="chatToggle">
+    AI Analyser
+</button>
+
+<div class="chat-widget" id="chatWidget">
+    <div class="chat-header">
+        <h3>🚨 AI Hazard Assistant</h3>
+        <button class="close-btn" id="closeChat">&times;</button>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+        <div class="message bot-message">
+            Hi! I can analyze hazard images and provide safety recommendations. Upload an image or describe the hazard.
+        </div>
+    </div>
+    <div class="chat-input-area">
+        <input type="file" id="imageInput" accept="image/*" style="display: none;">
+        <button onclick="document.getElementById('imageInput').click()" class="upload-btn">📷</button>
+        <input type="text" class="chat-input" id="chatInput" placeholder="Describe the hazard...">
+        <button class="send-btn" id="sendBtn">➤</button>
+    </div>
+</div>
+
+<!-- Chatbot JavaScript -->
+<script>
+class HazardChatbot {
+    constructor(apiKey) {
+        this.apiKey = apiKey;
+        this.apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+        this.lastUploadedImage = null; // Store the last uploaded image data
+        this.init();
+    }
+
+    init() {
+        this.bindEvents();
+    }
+
+    bindEvents() {
+        const chatToggle = document.getElementById('chatToggle');
+        const chatWidget = document.getElementById('chatWidget');
+        const closeChat = document.getElementById('closeChat');
+        const sendBtn = document.getElementById('sendBtn');
+        const chatInput = document.getElementById('chatInput');
+        const imageInput = document.getElementById('imageInput');
+
+        chatToggle.addEventListener('click', () => this.toggleWidget(true));
+        closeChat.addEventListener('click', () => this.toggleWidget(false));
+        sendBtn.addEventListener('click', () => this.sendMessage());
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') this.sendMessage();
+        });
+        imageInput.addEventListener('change', (e) => this.handleImageUpload(e));
+    }
+
+    toggleWidget(show) {
+        const chatToggle = document.getElementById('chatToggle');
+        const chatWidget = document.getElementById('chatWidget');
+        
+        if (show) {
+            chatWidget.style.display = 'flex';
+            chatToggle.style.display = 'none';
+        } else {
+            chatWidget.style.display = 'none';
+            chatToggle.style.display = 'flex';
+        }
+    }
+
+    async sendMessage() {
+        const chatInput = document.getElementById('chatInput');
+        const message = chatInput.value.trim();
+        if (!message) return;
+
+        this.addMessage(message, 'user');
+        chatInput.value = '';
+
+        try {
+            const response = await fetch(`${this.apiUrl}?key=${this.apiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{
+                            text: `You are a hazard reporting assistant. Analyze: "${message}". Provide: 1) Hazard type, 2) Severity (Low/Medium/High/Critical), 3) Safety recommendations, 4) Reporting priority. Keep response concise.`
+                        }]
+                    }]
+                })
+            });
+
+            const data = await response.json();
+            const botResponse = data.candidates[0].content.parts[0].text;
+            await this.addMessage(botResponse, 'bot');
+        } catch (error) {
+            this.addMessage('Error analyzing hazard. Please check your API key and try again.', 'bot');
+        }
+    }
+
+    async handleImageUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        this.addMessage(`📷 Image uploaded: ${file.name}`, 'user');
+
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const base64Image = e.target.result.split(',')[1];
+            const fullBase64 = e.target.result; // Complete base64 with data:image prefix
+            
+            // Store the image data for later use in report form
+            this.lastUploadedImage = {
+                base64: fullBase64,
+                name: file.name,
+                type: file.type,
+                size: file.size
+            };
+            
+            // Store in sessionStorage for persistence
+            sessionStorage.setItem('chatbotImageBase64', fullBase64);
+            sessionStorage.setItem('chatbotImageName', file.name);
+            sessionStorage.setItem('chatbotImageType', file.type);
+            sessionStorage.setItem('chatbotImageSize', file.size.toString());
+            
+            try {
+                const response = await fetch(`${this.apiUrl}?key=${this.apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [
+                                { text: "Analyze this image for hazards. Identify: 1) Hazard type, 2) Severity level, 3) Safety risks, 4) Immediate actions, 5) Reporting priority." },
+                                {
+                                    inline_data: {
+                                        mime_type: file.type,
+                                        data: base64Image
+                                    }
+                                }
+                            ]
+                        }]
+                    })
+                });
+
+                const data = await response.json();
+                const botResponse = data.candidates[0].content.parts[0].text;
+                await this.addMessage(botResponse, 'bot');
+            } catch (error) {
+                this.addMessage('Error analyzing image. Please try again.', 'bot');
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+
+    async addMessage(text, sender) {
+        const chatMessages = document.getElementById('chatMessages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${sender}-message`;
+        messageDiv.textContent = text;
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        // If this is a bot message with analysis, extract hazard type
+        if (sender === 'bot' && text.length > 50 && (text.includes('type') || text.includes('Type') || text.includes('Hazard'))) {
+            await this.extractAndShowHazard(text);
+        }
+    }
+
+    async extractAndShowHazard(analysisText) {
+        try {
+            // Show loading message
+            const chatMessages = document.getElementById('chatMessages');
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'message bot-message';
+            loadingDiv.textContent = '🔍 Extracting hazard type...';
+            loadingDiv.id = 'loading-extraction';
+            chatMessages.appendChild(loadingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // Extract hazard type using Gemini API
+            const hazardType = await this.extractHazardType(analysisText);
+            
+            // Remove loading message
+            const loadingElement = document.getElementById('loading-extraction');
+            if (loadingElement) {
+                loadingElement.remove();
+            }
+            
+            // Create result message
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'hazard-result';
+            
+            if (hazardType === "NONE") {
+                resultDiv.className += ' no-hazard';
+                resultDiv.innerHTML = `
+                    <strong>🚫 Result: NO HAZARD DETECTED</strong><br>
+                    <em>This does not qualify for hazard reporting.</em>
+                `;
+                
+                // Store NONE result
+                sessionStorage.setItem('extractedHazard', JSON.stringify({
+                    type: 'NONE',
+                    timestamp: new Date().toISOString()
+                }));
+            } else {
+                resultDiv.className += ' hazard-detected';
+                resultDiv.innerHTML = `
+                    <strong>✅ Hazard Type: ${hazardType}</strong><br>
+                    <button class="proceed-btn" onclick="proceedWithHazard('${hazardType}')">
+                        Proceed to Report
+                    </button>
+                `;
+            }
+            
+            chatMessages.appendChild(resultDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+        } catch (error) {
+            console.error('Extraction failed:', error);
+            
+            // Remove loading message if error occurs
+            const loadingElement = document.getElementById('loading-extraction');
+            if (loadingElement) {
+                loadingElement.remove();
+            }
+        }
+    }
+
+    async extractHazardType(chatbotResponse) {
+        const extractionPrompt = `
+Read this hazard analysis text and extract ONLY the hazard type mentioned. Return just the hazard type name or "NONE" if no hazard is mentioned.
+
+Analysis text:
+"${chatbotResponse}"
+
+Rules:
+1. Look for the hazard type in the text (after "Type:" or "Hazard type:")
+2. Extract only the hazard name (like "Pothole", "Road Damage", "Water leakage", etc.)
+3. If no hazard type is found or if it says "no hazard", return "NONE"
+4. Return only ONE word or short phrase - nothing else
+5. Do not include asterisks, numbers, or extra formatting
+
+Response:`;
+
+        try {
+            const response = await fetch(`${this.apiUrl}?key=${this.apiKey}`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{ text: extractionPrompt }]
+                    }],
+                    generationConfig: {
+                        temperature: 0.1,
+                        maxOutputTokens: 10,
+                        topP: 0.1,
+                        topK: 1
+                    }
+                })
+            });
+
+            const data = await response.json();
+            
+            if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+                let result = data.candidates[0].content.parts[0].text.trim();
+                
+                // Clean the result - remove asterisks, numbers, extra formatting
+                result = result.replace(/\*+/g, '').replace(/\d+\)/g, '').trim();
+                
+                // If result is empty or contains "none" or "no hazard", return NONE
+                if (!result || result.toLowerCase().includes('none') || result.toLowerCase().includes('no hazard')) {
+                    return "NONE";
+                }
+                
+                return result;
+            } else {
+                return "NONE";
+            }
+        } catch (error) {
+            console.error('Extraction error:', error);
+            return "NONE";
+        }
+    }
+
+    // Method to get the last uploaded image
+    getLastUploadedImage() {
+        return this.lastUploadedImage;
+    }
+}
+
+// Global function to proceed with hazard reporting
+function proceedWithHazard(hazardType) {
+    // Store the extracted hazard data
+    sessionStorage.setItem('extractedHazard', JSON.stringify({
+        type: hazardType,
+        timestamp: new Date().toISOString()
+    }));
+    
+    // Get the chatbot instance and store image data if available
+    if (window.hazardChatbot && window.hazardChatbot.lastUploadedImage) {
+        const imageData = window.hazardChatbot.lastUploadedImage;
+        sessionStorage.setItem('chatbotImageBase64', imageData.base64);
+        sessionStorage.setItem('chatbotImageName', imageData.name);
+        sessionStorage.setItem('chatbotImageType', imageData.type);
+        sessionStorage.setItem('chatbotImageSize', imageData.size.toString());
+    }
+    
+    alert(`Proceeding with ${hazardType} report. Redirecting to report form...`);
+    
+    // Close chatbot and redirect to report form
+    document.getElementById('chatWidget').style.display = 'none';
+    document.getElementById('chatToggle').style.display = 'flex';
+    
+    // Redirect to report form
+    window.location.href = '/report';
+}
+
+// Initialize chatbot when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    // Replace with your actual Gemini API key
+    const GEMINI_API_KEY ='AIzaSyBBZ3lnA7Y-9CuzZb0DgRxzl9BZKLQtF78' ;
+    window.hazardChatbot = new HazardChatbot(GEMINI_API_KEY);
+});
+</script>
